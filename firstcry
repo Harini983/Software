@@ -1,0 +1,88 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import utils.Base;
+import utils.EventHandler;
+import utils.ExcelReader;
+import utils.Screenshot;
+
+public class TestRunner extends Base{
+public static WebDriver driver;
+static int PAGE_LOAD_TIME = 20;
+ExcelReader reader;
+String name ="";
+Screenshot screenshot;
+
+
+@BeforeMethod
+public WebDriver beforeMethod() throws MalformedURLException {
+ChromeOptions chromeOptions = new ChromeOptions();
+driver = new RemoteWebDriver(new URL("http://localhost:4444/"), chromeOptions);
+
+driver.get("https://www.firstcry.com/");
+driver.manage().window().maximize();
+driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(PAGE_LOAD_TIME));
+WebDriverListener listener = new EventHandler();
+driver = new EventFiringDecorator<>(listener).decorate(driver);
+return driver;
+
+
+}
+
+@Test
+public void test1() throws IOException{
+driver.findElement(By.id("search_box")).click();
+name = reader.readdata("testdata/data.xlsx", "Sheet1", 0, 0);
+WebElement ele = driver.findElement(By.id("search_box"));
+ele.sendKeys(name,Keys.ENTER);
+
+}
+
+@Test
+public void test2() throws IOException{
+name = reader.readdata("testdata/data.xlsx", "Sheet1", 0, 1);
+WebElement ele = driver.findElement(By.id("search_box"));
+ele.sendKeys(name,Keys.ENTER);
+driver.findElement(By.xpath("//span[text()='Ethnic Wear']")).click();
+
+
+}
+
+@Test
+public void test3() throws IOException{
+name = reader.readdata("testdata/data.xlsx", "Sheet1", 0, 2);
+WebElement ele = driver.findElement(By.id("search_box"));
+ele.sendKeys(name,Keys.ENTER);
+driver.findElement(By.xpath("(//div[text()='ADD TO CART'])[1]")).click();
+screenshot.captureScreenShot("ss.png");
+
+
+}
+
+
+@AfterMethod
+public void tearDown() {
+if (driver != null) {
+driver.quit();
+}
+}
+
+}
