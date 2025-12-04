@@ -1,0 +1,12 @@
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version> <!-- check for latest version -->
+    <scope>provided</scope>
+</dependency>
+
+
+executiontype = remote
+ browsername = chrome
+ gridurl = https://localhost:4444
+ url = https://demo.broadleafcommerce.org
