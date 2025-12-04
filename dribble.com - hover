@@ -1,0 +1,61 @@
+package runner;
+
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
+import org.testng.annotations.Test;
+import utils.EventHandler;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.time.Duration;
+
+public class TestPage {
+
+    @Test
+    public void testLogin() throws MalformedURLException {
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-notifications");
+
+        DesiredCapabilities dc = new DesiredCapabilities();
+        dc.setBrowserName("chrome");
+        WebDriver driver = new RemoteWebDriver(
+                new URL("http://localhost:4444"), dc);
+
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
+
+        driver.get("https://dribbble.com/");
+
+        WebDriverListener listener = new EventHandler();
+        driver = new EventFiringDecorator<>(listener).decorate(driver);
+//START YOUR SCRIPT FROM HERE
+    WebElement exploreMenu = driver.findElement(By.xpath("//a[text()='Explore']"));
+    Actions actions = new Actions(driver);
+    actions.moveToElement(exploreMenu).perform();
+
+        // Wait for dropdown to appear and click "Animation"
+        WebElement animationOption = driver.findElement(By.xpath("//a[text()='Animation']"));
+        animationOption.click();
+
+        // Navigate back to homepage
+        driver.navigate().back();
+
+        // Re-hover on "Explore" after navigation
+        exploreMenu = driver.findElement(By.xpath("//a[text()='Explore']"));
+        actions.moveToElement(exploreMenu).perform();
+
+        // Click on "Branding" option
+        WebElement brandingOption = driver.findElement(By.xpath("//a[text()='Branding']"));
+        brandingOption.click();
+    driver.quit();
+
+    }
+}
