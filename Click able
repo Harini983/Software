@@ -1,0 +1,43 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import utils.Base;
+import utils.Screenshot;
+import utils.WebDriverHelper;
+
+public class TestRunner extends Base{
+    WebDriverHelper helper;
+   @BeforeMethod
+   public void before() throws MalformedURLException
+   {
+    openBrowser();
+    helper= new WebDriverHelper(driver);
+   }
+   @Test
+   public void test() throws IOException
+   {
+          Screenshot.getScreenShot(driver,"screenshot");
+          helper.clickOnElement(By.xpath("(//a[@class='elementor-item'])[5]"));
+          helper.javascriptScroll(By.xpath("//div[@class='elementor-element elementor-element-44d7e88 e-flex e-con-boxed e-con e-parent e-lazyloaded']"));
+          helper.clickOnElement(By.xpath("//a[text()='Roadmap'][1]"));
+
+   }
+   @AfterMethod
+   public void after()
+   {
+     if(driver!=null)
+    driver.quit();
+   }
+}
