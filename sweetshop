@@ -1,0 +1,45 @@
+
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.openqa.selenium.By;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import utils.Base;
+import utils.ExcelReader;
+import utils.Reporter;
+import utils.Screenshot;
+
+public class TestRunner extends Base{
+
+    Screenshot screenshot;
+
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        openBrowser();
+    }
+
+    @Test
+    public void testOne() throws IOException, InterruptedException {
+        
+        screenshot.getScreenShot(driver, "ss1");
+        driver.findElement(By.xpath("//a[text() = 'Login']")).click();
+        driver.findElement(By.xpath("//input[@id = 'exampleInputEmail']")).sendKeys(ExcelReader.readdata("/home/coder/project/workspace/Project/testdata/data.xlsx", "Sheet1", 0, 0));
+        driver.findElement(By.xpath("//input[@id = 'exampleInputPassword']")).sendKeys(ExcelReader.readdata("/home/coder/project/workspace/Project/testdata/data.xlsx", "Sheet1", 0, 1));
+        driver.findElement(By.xpath("//button[@id = 'btn_b8zxtn6th']")).click();
+        Thread.sleep(3000);
+        Reporter.generateExtentReport("vivrichards");
+        
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+        Reporter.generateExtentReport().flush();
+    }
+}
