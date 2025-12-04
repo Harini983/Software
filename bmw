@@ -1,0 +1,82 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+
+import utils.Base;
+import utils.Reporter;
+import utils.Screenshot;
+import utils.WebDriverHelper;
+
+
+public class TestSample extends Base{
+    ExtentReports reports;
+    Screenshot screenshot;
+    Reporter reporter;
+    WebDriverHelper helper;
+
+    @BeforeClass
+    public void generateReport(){
+        reports = reporter.generateExtentReport("Report");
+    }
+
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        // launch your browser
+        openBrowser();
+        helper = new WebDriverHelper(driver);
+    }
+
+    @Test
+    public void testOne() throws IOException, InterruptedException {
+        // write or call  throws IOException
+        Thread.sleep(4000);  
+        By ele =  By.xpath(" //a[text() = ' BMW ConnectedDrive Upgrades ']");
+        helper.javascriptScroll(ele);
+        helper.clickOnElement(ele);
+       
+        String parentWindow = driver.getWindowHandle();
+        Set<String> windowHandles = driver.getWindowHandles();
+        for(String window: windowHandles){
+            if(!window.equals(parentWindow)){
+                driver.switchTo().window(window);
+                break;
+            }
+        }
+        Thread.sleep(1000);
+         String title = driver.getTitle();
+         //Assert.assertTrue(title.contains("BMW ConnectedDrive|BMW.gb"));
+        Actions act = new Actions(driver);
+        Thread.sleep(1000);
+         WebElement elem =driver.findElement(By.xpath("(//ul[@class ='tw-grid tw-auto-rows-[_auto_auto_auto_auto] tw-gap-x-6 tw-gap-y-0 tw-grid-cols-1 md:tw-grid-cols-2 m1:tw-grid-cols-3 lg:tw-grid-cols-4 xl:tw-grid-cols-6'])//li[4]"));
+        act.moveToElement(elem).build().perform();
+         driver.findElement(By.xpath("(//ul[@class ='tw-grid tw-auto-rows-[_auto_auto_auto_auto] tw-gap-x-6 tw-gap-y-0 tw-grid-cols-1 md:tw-grid-cols-2 m1:tw-grid-cols-3 lg:tw-grid-cols-4 xl:tw-grid-cols-6'])//li[4]")).click();
+         Thread.sleep(7000);
+         screenshot.getScreenShot(driver, "screenshot");
+       
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+    }
+
+    @AfterClass
+    public void flushReport(){
+        reports.flush();
+    }
+}
