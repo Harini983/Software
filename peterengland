@@ -1,0 +1,101 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import utils.Base;
+import utils.ExcelReader;
+import utils.LoggerHandler;
+import utils.Reporter;
+import utils.Screenshot;
+
+public class TestRunner extends Base {
+
+    String filePath = "/home/coder/project/workspace/Project/testdata/data.xlsx"; // Excel file path
+
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        // launch your browser
+        openBrowser();
+    }
+
+    @Test
+    public void testSearch() throws IOException, InterruptedException {
+        // Read test data from Excel
+        String url = ExcelReader.readdata(filePath, "Sheet1", 1, 0);
+        String mensSearch = ExcelReader.readdata(filePath, "Sheet1", 1, 1);
+        String mensExpectedTitle = ExcelReader.readdata(filePath, "Sheet1", 1, 2);
+        String womensSearch = ExcelReader.readdata(filePath, "Sheet1", 1, 3);
+        String womensExpectedTitle = ExcelReader.readdata(filePath, "Sheet1", 1, 4);
+
+        // Navigate to site
+        driver.get(url);
+        LoggerHandler.logInfo("Navigated to: " + url);
+
+        WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+
+        // =========================
+        // Mens dress test
+        // =========================
+        WebElement searchBox1 = driver.findElement(By.xpath("//input[contains(@placeholder,'Search')]"));
+        searchBox1.clear();
+        searchBox1.sendKeys(mensSearch);
+        searchBox1.sendKeys(Keys.ENTER);
+        LoggerHandler.logInfo("mens dress value entered");
+        Screenshot.getScreenShot(driver, "ss1");
+
+        wait.until(ExpectedConditions.titleContains(mensExpectedTitle));
+        String actualTitle1 = driver.getTitle();
+        Thread.sleep(3000);
+        LoggerHandler.logInfo("Expected Mens Title: " + mensExpectedTitle);
+        LoggerHandler.logInfo("Actual Mens Title: " + actualTitle1);
+
+        if (actualTitle1 != null && actualTitle1.contains(mensExpectedTitle)) {
+            LoggerHandler.logInfo("PASS: Title matched for mens dress");
+        } else {
+            LoggerHandler.logInfo("FAIL: Expected [" + mensExpectedTitle + "] but got [" + actualTitle1 + "]");
+        }
+
+        // =========================
+        // Womens dress test
+        // =========================
+        WebElement searchBox2 = driver.findElement(By.xpath("//input[contains(@placeholder,'Search')]"));
+        searchBox2.clear();
+        Thread.sleep(3000);
+        searchBox2.sendKeys(womensSearch);
+        searchBox2.sendKeys(Keys.ENTER);
+        LoggerHandler.logInfo("womens dress value entered");
+        Screenshot.getScreenShot(driver, "ss2");
+
+        wait.until(ExpectedConditions.titleContains(womensExpectedTitle));
+        String actualTitle2 = driver.getTitle();
+        LoggerHandler.logInfo("Expected Womens Title: " + womensExpectedTitle);
+        LoggerHandler.logInfo("Actual Womens Title: " + actualTitle2);
+
+        if (actualTitle2 != null && actualTitle2.contains(womensExpectedTitle)) {
+            LoggerHandler.logInfo("PASS: Title matched for womens dress");
+        } else {
+            LoggerHandler.logInfo("FAIL: Expected [" + womensExpectedTitle + "] but got [" + actualTitle2 + "]");
+        }
+
+        // Generate extent report
+        Reporter.generateExtentReport("peterEngland Report");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+        Reporter.generateExtentReport().flush();
+        LoggerHandler.logInfo("Browser closed and report flushed.");
+    }
+}
