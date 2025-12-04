@@ -1,0 +1,126 @@
+package uistore;
+
+import org.openqa.selenium.By;
+
+public class locator {
+   
+    public static By hov = By.xpath("//a[@id='vn-link-hdr-site-2']");
+    public static By dru = By.xpath("//*[@id=\"vn-menu-hdr-site-2\"]/ul/li[1]/a");
+    public static By inp = By.xpath("//input[@placeholder='Enter medication name to search']");
+    public static By sc = By.linkText("Nabumetone");
+   
+
+}
+
+package runner;
+
+import java.net.MalformedURLException;
+
+import utils.Reporter;
+
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+
+import page.case1;
+import utils.Base;
+
+public class TestSample extends Base{
+    ExtentReports reports;
+
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        // launch your browser
+        reports = Reporter.generateExtentReport("Web_Md");
+        openBrowser();
+       
+    }
+
+    @Test
+    public void testOne() {
+        // write or call ur pages here
+
+        case1 testcase = new case1(driver,reports);
+
+        testcase.performCase();
+        //driver.findElement(By.xpath("//*[@id=\"index-page\"]/div[1]/div/div/div/div/input")).sendKeys("Nabumetone");
+ 
+
+ 
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        if(driver!=null)
+        {
+            driver.quit();
+        }
+        if(reports!=null)
+        {
+            reports.flush();
+        }
+    }
+}
+package page;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+
+import uistore.locator;
+import utils.ExcelReader;
+import utils.Reporter;
+import utils.Screenshot;
+import utils.WebDriverHelper;
+
+public class case1 {
+    WebDriverHelper helper;
+    ExtentTest test;
+    WebDriver driver;
+
+    public case1(WebDriver driver,ExtentReports reports){
+        this.driver = driver;
+        helper = new WebDriverHelper(driver);
+        test = reports.createTest("Web_Md");
+    }
+
+    public void performCase(){
+        /*String input = "";
+        try{
+            input = ExcelReader.readdata("testdata/data.xlsx", "Sheet1", 0, 0);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }*/
+
+        try{
+
+            WebElement hoverElement = driver.findElement(locator.hov);
+            Actions actions = new Actions(driver);
+            actions.moveToElement(hoverElement).perform();
+
+           
+
+            helper.clickOnElement(locator.dru);
+            helper.javascriptScroll(locator.sc);
+           helper.sendKeys(locator.inp, "Nabumetone");
+           
+
+            String screenShotPath = Screenshot.getScreenShot(driver, "Result page");
+            test.addScreenCaptureFromPath(screenShotPath);
+            test.pass("Form Filled");
+        }
+        catch(Exception e){
+            Reporter.attachScreenshotToReport(test, driver, "FormFailed");
+            test.fail("Form not filled"+ e.getMessage());
+        }
+
+    }
+}
