@@ -1,0 +1,15 @@
+
+driver.get("https://demo.automationtesting.in/Alerts.html");
+            driver.findElement(By.xpath("//div[@id='OKTab']//button")).click();
+            Alert normalAlert = driver.switchTo().alert();
+            normalAlert.accept();
+           
+            driver.findElement(By.xpath("//a[text()='Alert with OK & Cancel ']")).click();
+            driver.findElement(By.xpath("//div[@id='CancelTab']//button")).click();
+            Alert AlertwithOk = driver.switchTo().alert();
+            AlertwithOk.dismiss();
+
+            driver.findElement(By.xpath("//a[text()='Alert with Textbox ']")).click();
+            driver.findElement(By.xpath("//div[@id='Textbox']//button")).click();
+            Alert AlertwithOkandCancel = driver.switchTo().alert();
+            AlertwithOkandCancel.accept();
