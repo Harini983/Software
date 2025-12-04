@@ -1,0 +1,63 @@
+package runner;
+
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import utils.Base;
+import utils.EventHandler;
+import utils.Screenshot;
+import utils.WebDriverHelper;
+
+import java.net.URL;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.time.Duration;
+import java.util.Properties;
+import java.util.Set;
+
+
+public class TestPage  extends Base{
+    WebDriverHelper helper;
+    @BeforeMethod
+    public void helper() throws MalformedURLException
+    {
+        driver=openBrowser();
+        helper=new WebDriverHelper(driver);
+    }
+
+    @Test
+    public void testRedbus() throws InterruptedException, IOException {
+   
+        Thread.sleep(3000);
+         By ele=By.xpath("//input[@name='email']");
+           helper.javascriptScroll(ele);
+           Thread.sleep(6000);
+           driver.findElement(By.xpath("//input[@name='email']")).click();
+           driver.findElement(By.xpath("//input[@name='email']")).sendKeys("admin@gmail.com");
+           Thread.sleep(3000);
+           driver.findElement(By.xpath("//button[@id='gumroad-follow-form-embed-button']")).click();
+           Thread.sleep(3000);
+           Screenshot.getScreenShot(driver, "screenshot");
+       
+
+         
+
+   
+    }
+    @AfterMethod
+    public void quitit()
+    {
+        driver.quit();
+    }
+}
