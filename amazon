@@ -1,0 +1,70 @@
+package runner;
+
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
+import org.testng.annotations.Test;
+import utils.EventHandler;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.time.Duration;
+import java.util.Set;
+
+
+public class TestPage {
+    WebDriver driver;
+    @Test
+    public void testRedbus() throws MalformedURLException, InterruptedException {
+        try {
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--disable-notifications");
+   
+            DesiredCapabilities dc = new DesiredCapabilities();
+            dc.setBrowserName("chrome");
+            driver = new RemoteWebDriver(
+                    new URL("http://localhost:4444"), dc);
+   
+            driver.manage().window().maximize();
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+            driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
+            WebDriverListener listener = new EventHandler();
+            driver = new EventFiringDecorator<>(listener).decorate(driver);
+   
+            driver.get("https://www.amazon.in");
+   
+            Thread.sleep(50);
+            // driver.findElement(By.xpath("//button[text()='Continue shopping']")).click();
+            WebElement w=driver.findElement(By.xpath("//span[text()='Hello, sign in']"));
+            Actions act=new Actions(driver);
+            act.moveToElement(w).perform();
+            driver.findElement(By.xpath("//span[text()='Sign in']")).click();
+            driver.navigate().back();
+            driver.findElement(By.id("twotabsearchtextbox")).sendKeys("Vivo v25");
+            driver.findElement(By.id("nav-search-submit-button")).click();
+            driver.findElement(By.xpath("(//div[@class='a-section aok-relative s-image-fixed-height'])[1]//img")).click();
+            Thread.sleep(2000);
+            String parenthandle=driver.getWindowHandle();
+            Set<String>allhandles=driver.getWindowHandles();
+            for(String s:allhandles)
+            {
+                while(!parenthandle.equalsIgnoreCase(s))
+                {
+                    driver.switchTo().window(s);
+                    break;
+                }
+            }
+           
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }finally{
+            driver.quit();
+        }        
+    }
+}
