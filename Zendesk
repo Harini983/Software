@@ -1,0 +1,126 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
+import utils.Base;
+import utils.ExcelReader;
+import utils.LoggerHandler;
+import utils.Reporter;
+import utils.Screenshot;
+
+
+public class TestRunner extends Base{
+    ExtentReports reports;
+    ExcelReader reader;
+    Screenshot screenshot;
+    Reporter reporter;
+
+    @BeforeClass
+    public void generateReport(){
+        reports = reporter.generateExtentReport("Report");
+    }
+
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        driver = openBrowser();
+    }
+   
+    @Test
+    public void testOne() throws IOException {
+        String FirstName = reader.readdata("testData/Data.xlsx", "Sheet1",0, 0);
+        String LastName = reader.readdata("testData/Data.xlsx", "Sheet1",0, 1);
+       
+        driver.findElement(By.name("FirstName")).sendKeys(FirstName);
+        driver.findElement(By.name("LastName")).sendKeys(LastName);
+        driver.findElement(By.name("owner.email")).sendKeys("Work001@email.com");
+        WebElement ele = driver.findElement(By.id(":R2q2rl676:--input"));
+        Select sc = new Select(ele);
+        sc.selectByVisibleText("India");
+        screenshot.getScreenShot(driver, "screenshot");
+        LoggerHandler.logInfo("LastName");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+    }
+
+    @AfterClass
+    public void flushReports(){
+        reports.flush();
+    }
+}
+
+or
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.openqa.selenium.By;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+
+import utils.Base;
+import utils.LoggerHandler;
+import utils.Screenshot;
+import utils.Reporter;
+
+
+public class TestSample extends Base {
+    ExtentReports reports;
+    Reporter reporter;
+    
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        // launch your browser
+        reports=reporter.generateExtentReport("Reports");
+
+    driver=openBrowser();
+
+            }
+
+    @Test
+    public void testOne() throws InterruptedException, IOException {
+        // write or call ur pages here
+        Thread.sleep(8000);
+       // driver.findElement(By.xpath("//button[@id='onetrust-accept-btn-handler']")).click();
+        Thread.sleep(5000);
+        driver.findElement(By.xpath("//div[@class='FormFieldstyle__FormFieldWrapper-sc-1xgjwzo-7 cSYlgS']//input")).sendKeys("FirstName");
+
+        Thread.sleep(5000);
+        driver.findElement(By.xpath("//input[@name='LastName']")).sendKeys("LastName");
+        Thread.sleep(5000);
+        Screenshot.getScreenShot(driver, "screenshot");
+        driver.findElement(By.xpath("//input[@name='owner.email']")).sendKeys("Work001@email.com");
+        Thread.sleep(10000);
+        driver.findElement(By.xpath("//div[@class='StyledTextInput-sc-k12n8x-0 StyledTextFauxInput-sc-yqw7j9-0 StyledSelectWrapper-sc-i7b6hw-0 hEMlJB kNtOoI ejWlNx']")).click();
+        Thread.sleep(8000);
+        LoggerHandler.logInfo("TestCase passed");
+
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+    }
+}
