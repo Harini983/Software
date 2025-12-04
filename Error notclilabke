@@ -1,0 +1,74 @@
+@Test
+    public void testSignupWindowHandling() {
+        driver.get("https://www.spicejet.com/");
+        driver.manage().window().maximize();
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+        // Click directly when it's clickable
+        WebElement signupLink = wait.until(
+                ExpectedConditions.elementToBeClickable(By.xpath("//div[text()='Signup']")));
+        signupLink.click();
+
+        // Switch to new window
+        String parentWindow = driver.getWindowHandle();
+        for (String window : driver.getWindowHandles()) {
+            if (!window.equals(parentWindow)) {
+                driver.switchTo().window(window);
+                break;
+            }
+        }
+
+        // Verify child page title
+        Assert.assertTrue(driver.getTitle().contains("Member Enrollment"),
+                "❌ Title mismatch! Expected 'Member Enrollment' in title");
+
+        driver.close();
+        driver.switchTo().window(parentWindow);
+    }
+
+    @Test
+    public void testCreditCardWindowHandling() {
+        driver.get("https://www.spicejet.com/");
+        driver.manage().window().maximize();
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        // Click "SpiceClub" (it opens dropdown by click, not hover)
+        WebElement spiceClub = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[text()='SpiceClub']")));
+        spiceClub.click();
+
+        // Click "Credit Cards"
+        WebElement creditCard = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[text()='Credit Cards']")));
+        creditCard.click();
+
+        // Switch to new window
+        String parent = driver.getWindowHandle();
+        for (String win : driver.getWindowHandles()) {
+            if (!win.equals(parent)) {
+                driver.switchTo().window(win);
+                break;
+            }
+        }
+
+        // Click "Apply Now"
+        WebElement applyNow = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("(//a[contains(text(),'Apply')])[1]")));
+        applyNow.click();
+
+        // Enter test number
+        WebElement phone = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//input[@type='tel']")));
+        phone.sendKeys("9999999999");
+
+        // Click "Cancel"
+        WebElement cancel = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[contains(text(),'Cancel')]")));
+        cancel.click();
+
+        // Close child and return to parent
+        driver.close();
+        driver.switchTo().window(parent);
+    }
