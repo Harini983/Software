@@ -1,0 +1,104 @@
+package runner;
+
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+// import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+
+import utils.EventHandler;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.time.Duration;
+
+public class TestPage {
+    WebDriver driver;
+    ExtentReports reports;
+    ExtentSparkReporter spark;
+    @BeforeClass
+    public void getReports(){
+        reports = new ExtentReports();
+        spark = new ExtentSparkReporter("reports/myReport.html");
+        spark.config().setTheme(Theme.DARK);
+        spark.config().setDocumentTitle("Orange HRM report");
+
+        if(reports != null) {
+            reports.attachReporter(spark);
+        }
+
+   
+    }
+
+    @BeforeMethod
+    public void setup() throws MalformedURLException {
+
+       
+        driver = new RemoteWebDriver(new URL("http://localhost:4444"), new ChromeOptions());
+        driver.manage().window().maximize();
+        driver.get("https://practicetestautomation.com/practice-test-exceptions/");
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        WebDriverListener listener = new EventHandler();
+        driver = new EventFiringDecorator<>(listener).decorate(driver);
+    }
+
+   //start your script here
+    @Test
+    public void testcase1(){
+        try {
+
+            WebElement  username_elem = driver.findElement(By.xpath("//a[text()='Practice']"));
+            username_elem.click();
+           
+            Thread.sleep(2000);
+            WebElement  password_elem = driver.findElement(By.xpath("//a[text()='Test Login Page']"));
+            password_elem.click();
+           
+            Thread.sleep(2000);
+            driver.findElement(By.id("username")).sendKeys("student");
+            driver.findElement(By.id("password")).sendKeys("Password123");
+           
+            WebElement button = driver.findElement(By.id("submit"));
+            button.click();
+            Thread.sleep(2000);
+
+           
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+    }
+    @AfterMethod
+    public void teardown()
+    {
+        //quit your driver
+        driver.quit();
+        //flush your reports
+    }
+
+    @AfterClass
+    public void finalReports(){
+        if(reports != null) {
+            reports.flush();
+        }
+    }
+}
