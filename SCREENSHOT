@@ -1,0 +1,65 @@
+package runner;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.io.IOException;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.events.EventFiringDecorator;
+import org.openqa.selenium.support.events.WebDriverListener;
+import org.testng.annotations.Test;
+import utils.EventHandler;
+
+public class TestSample {
+
+    public static WebDriver driver;
+
+    @Test
+    public void testMain() throws InterruptedException, IOException {
+        try {
+            driver = new RemoteWebDriver(new URL("http://localhost:4444"), new ChromeOptions());
+           
+            // Maximize the browser window
+            driver.manage().window().maximize();
+                       
+            // Add the implicit wait
+            driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
+                     
+            // Add the page load timeout
+            driver.manage().timeouts().pageLoadTimeout(java.time.Duration.ofSeconds(10));
+                     
+            // Initialize the event listener
+            WebDriverListener listener = new EventHandler();
+            driver = new EventFiringDecorator<>(listener).decorate(driver);
+
+            // Start your script from here
+            driver.get("https://demo.broadleafcommerce.org/");
+
+            // Perform any additional actions (e.g., interacting with elements)
+            driver.findElement(By.xpath("//input[@name = 'q']")).click();
+            driver.findElement(By.xpath("//input[@name = 'q']")).sendKeys("shirt",Keys.ENTER);
+            Thread.sleep(2000);
+            driver.findElement(By.xpath("(//span[text() = 'Hot Sauces'])[2]")).click();
+            Thread.sleep(2000);
+
+            TakesScreenshot ts = (TakesScreenshot) driver;
+            File source =  ts.getScreenshotAs(OutputType.FILE);
+            String destination = "screenshot/myscreenshot.png";
+            FileUtils.copyFile(source, new File(destination));
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } finally {
+            if (driver != null) {
+                driver.quit();
+            }
+        }
+    }
+}
