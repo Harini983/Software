@@ -1,0 +1,51 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.openqa.selenium.By;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import utils.Base;
+import utils.Reporter;
+import utils.Screenshot;
+
+public class TestSample extends Base{  
+
+    Screenshot screenshot;
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException{
+        // launch your browser
+        openBrowser();
+    }
+
+    @Test
+    public void testOne() throws IOException, InterruptedException{
+        // write or call ur pages here
+        try{
+        driver.findElement(By.xpath("//a[text()='Admin']")).click();
+        driver.findElement(By.xpath("//input[@id='username']")).sendKeys("Admin");
+        driver.findElement(By.xpath("//input[@id='password']")).sendKeys("123456");
+        driver.findElement(By.xpath("//button[@id='doLogin']")).click();
+        screenshot.getScreenShot(driver, "screenshot");
+        Thread.sleep(3000);
+        Reporter.generateExtentReport("Automation");
+        }
+        catch(Exception e)
+        {
+            e.getMessage();
+        }
+
+       
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+        Reporter.generateExtentReport().flush();
+       
+    }
+}
