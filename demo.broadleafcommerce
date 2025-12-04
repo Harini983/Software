@@ -1,0 +1,68 @@
+package runner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+
+import utils.Base;
+import utils.Reporter;
+import utils.Screenshot;
+import utils.WebDriverHelper;
+import org.openqa.selenium.Keys;
+
+
+
+public class TestSample extends Base{
+    ExtentReports reports;
+   
+    Reporter reporter;
+    WebDriverHelper helper;
+
+    @BeforeClass
+    public void generateReport(){
+        reports = reporter.generateExtentReport("Report");
+    }
+
+    @BeforeMethod
+    public void launchBrowser() throws MalformedURLException {
+        // launch your browser
+        openBrowser();
+        helper = new WebDriverHelper(driver);
+    }
+
+    @Test
+    public void testOne() throws IOException, InterruptedException {
+        // write or call  throws IOException
+        Thread.sleep(1000);
+        WebElement ele = driver.findElement(By.xpath("//input[@type = 'search']"));
+        ele.sendKeys("shirt");
+        ele.sendKeys(Keys.ENTER);
+       
+        Thread.sleep(50000);
+        driver.findElement(By.xpath("(//div[@class ='left-nav hidden-xs collapse main-menu-wrapper']//li)[2]")).click();
+        Screenshot.getScreenShot(driver,"ss");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        // quit the driver here
+        driver.quit();
+    }
+
+    @AfterClass
+    public void flushReport(){
+        reports.flush();
+    }
+}
